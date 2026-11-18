@@ -1,0 +1,24 @@
+import {beforeAll,afterAll,beforeEach,describe,it,expect,vi} from "vitest";
+import mongoose from "mongoose";
+import {MongoMemoryServer} from "mongodb-memory-server";
+import request from "supertest";
+vi.mock("../src/services/sheets.service.js",()=>({appendEnquiryToSheet:vi.fn(async e=>{e.delivery.sheet.row=2;return{row:2};}),updateSheetConfirmation:vi.fn(async()=>{}),formulaGuard:v=>/^[=+\-@]/.test(String(v))?`'${v}`:String(v)}));
+vi.mock("../src/services/mail.service.js",()=>({sendMail:vi.fn(async({to})=>({data:{id:`email-${to}`},error:null}))}));
+const {createApp}=await import("../src/app.js");
+const Enquiry=(await import("../src/models/Enquiry.js")).default;
+const {sendMail}=await import("../src/services/mail.service.js");
+const {appendEnquiryToSheet}=await import("../src/services/sheets.service.js");
+let mongo,app;
+beforeAll(async()=>{mongo=await MongoMemoryServer.create();await mongoose.connect(mongo.getUri());app=createApp({allowedOrigins:["http://localhost:5173"]});});
+afterAll(async()=>{await mongoose.disconnect();await mongo.stop();});
+beforeEach(async()=>{await Enquiry.deleteMany({});vi.clearAllMocks();});
+const popup={name:"Alex Morgan",countryCode:"+91",phone:"9876543210",email:"Alex@Example.com",pathway:"AI for Real Estate Professional",preferredTime:"Morning (9 AM – 12 PM)",source:"lead-popup"};
+describe("enquiry API",()=>{
+it("stores popup, syncs sheet, sends email",async()=>{await request(app).post("/api/enquiries").send(popup).expect(201);expect(await Enquiry.countDocuments()).toBe(1);expect(appendEnquiryToSheet).toHaveBeenCalledTimes(1);expect(sendMail).toHaveBeenCalledTimes(1);});
+it("accepts show-interest without popup fields",async()=>{await request(app).post("/api/enquiries").send({name:"Sam",phone:"+91 99999",email:"sam@example.com",track:"AI for Real Estate Manager",source:"show-interest-form"}).expect(201);expect(sendMail.mock.calls[0][0].html).not.toContain("Preferred contact time:");});
+it.each([{...popup,email:"a@b.com,c@d.com"},{...popup,pathway:"Invalid"},{...popup,preferredTime:"Invalid"}, {name:"Alex",email:"alex@example.com"}])("rejects invalid data",async payload=>{await request(app).post("/api/enquiries").send(payload).expect(400);expect(await Enquiry.countDocuments()).toBe(0);});
+it("rejects honeypot",async()=>{await request(app).post("/api/enquiries").send({...popup,website:"spam"}).expect(400);expect(await Enquiry.countDocuments()).toBe(0);});
+it("skips repeat confirmation within six hours",async()=>{await request(app).post("/api/enquiries").send(popup).expect(201);await request(app).post("/api/enquiries").send({...popup,name:"Alex 2"}).expect(201);expect(await Enquiry.countDocuments()).toBe(2);expect(sendMail).toHaveBeenCalledTimes(1);});
+it("escapes HTML",async()=>{await request(app).post("/api/enquiries").send({...popup,name:"<b>Alex</b>",phone:"<script>123"}).expect(201);const html=sendMail.mock.calls[0][0].html;expect(html).toContain("&lt;b&gt;Alex&lt;/b&gt;");expect(html).not.toContain("<script>");});
+});
+it("formula guards prefixes",async()=>{const {formulaGuard}=await import("../src/services/sheets.service.js");expect(formulaGuard("=SUM")).toBe("'=SUM");expect(formulaGuard("+91")).toBe("'+91");expect(formulaGuard("-x")).toBe("'-x");expect(formulaGuard("@x")).toBe("'@x");});
