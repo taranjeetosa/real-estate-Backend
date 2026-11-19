@@ -78,8 +78,15 @@ export async function appendEnquiryToSheet(e) {
     insertDataOption: "INSERT_ROWS",
     requestBody: { values: [row] },
   });
-  const match = /!H?(\d+)(?::|$)/.exec(response.data.updatedRange || "");
-  if (!match) throw new Error("Google Sheets did not return a row number");
+  const updatedRange = String(
+    response.data?.updates?.updatedRange || response.data?.updatedRange || "",
+  ).trim();
+  const cellRange = updatedRange.slice(updatedRange.lastIndexOf("!") + 1);
+  const match = /\$?[A-Z]+\$?(\d+)/i.exec(cellRange);
+  if (!match)
+    throw new Error(
+      `Google Sheets did not return a row number (updatedRange=${JSON.stringify(updatedRange || null)})`,
+    );
   return { row: Number(match[1]) };
 }
 export async function updateSheetConfirmation(row, state) {

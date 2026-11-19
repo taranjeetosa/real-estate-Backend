@@ -86,6 +86,14 @@ export async function processEnquiry(e) {
           : `Failed: ${e.delivery.confirmationEmail.error || "email delivery failed"}`;
     try {
       await updateSheetConfirmation(e.delivery.sheet.row, reason);
+      logger.info(
+        {
+          enquiryId: e.id,
+          sheetRow: e.delivery.sheet.row,
+          confirmationEmailState: e.delivery.confirmationEmail.state,
+        },
+        "Confirmation status updated in Google Sheet",
+      );
     } catch (error) {
       e.delivery.sheet.error = error.message || "Unable to update sheet confirmation";
       logger.error(
