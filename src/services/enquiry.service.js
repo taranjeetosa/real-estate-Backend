@@ -47,7 +47,7 @@ export async function processEnquiry(e) {
           text: c.text,
           replyTo: process.env.MAIL_REPLY_TO,
         });
-        if (r.error) throw new Error(r.error.message || "Resend returned an error");
+        if (r.error) throw new Error(r.error.message || "Email provider returned an error");
         e.delivery.confirmationEmail.state = "sent";
         e.delivery.confirmationEmail.error = undefined;
         e.delivery.confirmationEmail.providerId = r.data?.id;

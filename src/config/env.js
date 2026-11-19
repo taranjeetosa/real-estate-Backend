@@ -1,4 +1,9 @@
+import { existsSync } from "node:fs";
+import { loadEnvFile } from "node:process";
 import { z } from "zod";
+
+if (existsSync(".env")) loadEnvFile(".env");
+
 const schema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   PORT: z.coerce.number().default(3000),
@@ -8,7 +13,7 @@ const schema = z.object({
   GOOGLE_SHEET_TAB: z.string().optional(),
   GOOGLE_SERVICE_ACCOUNT_EMAIL: z.string().optional(),
   GOOGLE_PRIVATE_KEY: z.string().optional(),
-  RESEND_API_KEY: z.string().optional(),
+  SENDER_API_KEY: z.string().optional(),
   MAIL_FROM: z.string().optional(),
   MAIL_REPLY_TO: z.string().optional(),
 });
@@ -16,7 +21,7 @@ export function loadEnv() {
   const r = schema.safeParse(process.env);
   if (!r.success)
     throw new Error(
-      `Invalid environment: ${r.error.issues.map((x) => x.message).join(", ")}`,
+      `Invalid environment: ${r.error.issues.map((x) => `${x.path.join(".") || "environment"}: ${x.message}`).join(", ")}`,
     );
   r.data.allowedOrigins = r.data.ALLOWED_ORIGINS.split(",")
     .map((x) => x.trim())

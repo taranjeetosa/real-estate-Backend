@@ -23,7 +23,7 @@ export function buildUserConfirmation(e) {
     "",
     "Phone: +91 95990 37181",
     "WhatsApp: https://wa.me/919599037181",
-    "Email: support@onestock.com",
+    "Email: support@onestockacadmemy.com",
     "Address: Floor-01, H Block, H-189, Sector 63, Noida, Uttar Pradesh 201309",
     "",
     "You are receiving this email because you submitted an enquiry on the One Stock Academy website.",

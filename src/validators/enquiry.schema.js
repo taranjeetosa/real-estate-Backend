@@ -12,8 +12,8 @@ export const times = [
 export const enquirySchema = z
   .object({
     name: z.string().trim().min(1).max(120),
-    countryCode: z.string().trim().max(8).optional(),
-    phone: z.string().trim().min(1).max(32),
+    countryCode: z.string().trim().regex(/^\+\d{1,4}$/, "Choose a valid country code"),
+    phone: z.string().trim().regex(/^\d{10}$/, "Phone number must be exactly 10 digits"),
     email: z
       .string()
       .trim()
@@ -30,7 +30,7 @@ export const enquirySchema = z
   .pipe(
     z.object({
       name: z.string(),
-      countryCode: z.string().optional(),
+      countryCode: z.string(),
       phone: z.string(),
       email: z.string(),
       pathway: z.enum(pathways),
@@ -39,10 +39,6 @@ export const enquirySchema = z
       website: z.string().optional(),
     }),
   )
-  .refine((v) => v.source !== "lead-popup" || !!v.countryCode, {
-    message: "countryCode is required",
-    path: ["countryCode"],
-  })
   .refine((v) => v.source !== "lead-popup" || !!v.preferredTime, {
     message: "preferredTime is required",
     path: ["preferredTime"],
