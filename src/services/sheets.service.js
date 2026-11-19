@@ -62,7 +62,13 @@ export async function appendEnquiryToSheet(e) {
     formulaGuard(e.email),
     formulaGuard(e.pathway),
     formulaGuard(e.preferredTime || ""),
-    formulaGuard(e.source === "lead-popup" ? "Lead popup" : "Show Interest form"),
+    formulaGuard(
+      e.source === "lead-popup"
+        ? "Lead popup"
+        : e.source === "curriculum-download"
+          ? "Curriculum download"
+          : "Show Interest form",
+    ),
     "",
   ];
   const response = await sheets.spreadsheets.values.append({

@@ -20,7 +20,11 @@ const s = new mongoose.Schema(
     },
     pathway: { type: String, required: true },
     preferredTime: String,
-    source: { type: String, required: true, enum: ["lead-popup", "show-interest-form"] },
+    source: {
+      type: String,
+      required: true,
+      enum: ["lead-popup", "show-interest-form", "curriculum-download"],
+    },
     ip: String,
     userAgent: String,
     delivery: {

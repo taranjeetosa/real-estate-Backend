@@ -23,7 +23,7 @@ export const enquirySchema = z
     pathway: z.string().optional(),
     track: z.string().optional(),
     preferredTime: z.enum(times).optional(),
-    source: z.enum(["lead-popup", "show-interest-form"]),
+    source: z.enum(["lead-popup", "show-interest-form", "curriculum-download"]),
     website: z.string().optional(),
   })
   .transform((v) => ({ ...v, pathway: v.track || v.pathway }))
@@ -35,7 +35,7 @@ export const enquirySchema = z
       email: z.string(),
       pathway: z.enum(pathways),
       preferredTime: z.enum(times).optional(),
-      source: z.enum(["lead-popup", "show-interest-form"]),
+      source: z.enum(["lead-popup", "show-interest-form", "curriculum-download"]),
       website: z.string().optional(),
     }),
   )
