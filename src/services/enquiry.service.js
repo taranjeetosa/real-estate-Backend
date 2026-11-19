@@ -3,6 +3,7 @@ import Enquiry from "../models/Enquiry.js";
 import { appendEnquiryToSheet, updateSheetConfirmation } from "./sheets.service.js";
 import { sendMail } from "./mail.service.js";
 import { buildUserConfirmation } from "../emails/userConfirmation.js";
+import { logger } from "../utils/logger.js";
 export function hashIp(ip) {
   return ip ? crypto.createHash("sha256").update(ip).digest("hex").slice(0, 16) : "";
 }
@@ -26,6 +27,10 @@ export async function processEnquiry(e) {
       e.delivery.sheet.state = "failed";
       e.delivery.sheet.error = x.message || "Google Sheets sync failed";
       e.delivery.sheet.at = new Date();
+      logger.error(
+        { enquiryId: e.id, delivery: "sheet", attempt: e.delivery.sheet.attempts, err: x },
+        "Enquiry delivery failed",
+      );
     }
   }
   if (
@@ -36,6 +41,10 @@ export async function processEnquiry(e) {
       e.delivery.confirmationEmail.state = "skipped";
       e.delivery.confirmationEmail.error = "already sent recently";
       e.delivery.confirmationEmail.at = new Date();
+      logger.info(
+        { enquiryId: e.id, delivery: "confirmation-email" },
+        "Confirmation email skipped because one was sent recently",
+      );
     } else {
       e.delivery.confirmationEmail.attempts++;
       const c = buildUserConfirmation(e);
@@ -56,6 +65,15 @@ export async function processEnquiry(e) {
         e.delivery.confirmationEmail.state = "failed";
         e.delivery.confirmationEmail.error = x.message || "Email delivery failed";
         e.delivery.confirmationEmail.at = new Date();
+        logger.error(
+          {
+            enquiryId: e.id,
+            delivery: "confirmation-email",
+            attempt: e.delivery.confirmationEmail.attempts,
+            err: x,
+          },
+          "Enquiry delivery failed",
+        );
       }
     }
   }
@@ -70,6 +88,10 @@ export async function processEnquiry(e) {
       await updateSheetConfirmation(e.delivery.sheet.row, reason);
     } catch (error) {
       e.delivery.sheet.error = error.message || "Unable to update sheet confirmation";
+      logger.error(
+        { enquiryId: e.id, delivery: "sheet-status-update", err: error },
+        "Enquiry delivery status update failed",
+      );
     }
   }
   await e.save();

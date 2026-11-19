@@ -1,7 +1,14 @@
 import { ZodError } from "zod";
 import { logger } from "../utils/logger.js";
-export function errorHandler(error, _req, res, _next) {
-  if (error instanceof ZodError)
+export function errorHandler(error, req, res, _next) {
+  if (error instanceof ZodError) {
+    logger.warn(
+      {
+        requestId: req.requestId,
+        validationFields: [...new Set(error.issues.map((issue) => issue.path.join(".")))],
+      },
+      "Request validation failed",
+    );
     return res
       .status(400)
       .json({
@@ -12,7 +19,12 @@ export function errorHandler(error, _req, res, _next) {
           message: x.message,
         })),
       });
-  logger.error({ err: error }, "Unhandled request error");
+  }
+
+  logger.error(
+    { requestId: req.requestId, err: error },
+    "Unhandled request error",
+  );
   return res
     .status(500)
     .json({

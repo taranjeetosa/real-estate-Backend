@@ -7,6 +7,9 @@ if (existsSync(".env")) loadEnvFile(".env");
 const schema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   PORT: z.coerce.number().default(3000),
+  LOG_LEVEL: z
+    .enum(["fatal", "error", "warn", "info", "debug", "trace", "silent"])
+    .optional(),
   MONGODB_URI: z.string().min(1),
   ALLOWED_ORIGINS: z.string().default(""),
   GOOGLE_SHEET_ID: z.string().optional(),

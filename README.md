@@ -13,7 +13,10 @@ Set `VITE_API_URL` in `Real-estate/.env`.
 The backend loads `backend/.env` when present; MongoDB must be reachable at `MONGODB_URI`.
 
 ## Environment variables
-`NODE_ENV`, `PORT`, `MONGODB_URI`, `ALLOWED_ORIGINS`, `GOOGLE_SHEET_ID`, `GOOGLE_SHEET_TAB`, `GOOGLE_SERVICE_ACCOUNT_EMAIL`, `GOOGLE_PRIVATE_KEY`, `SENDER_API_KEY`, `MAIL_FROM`, and `MAIL_REPLY_TO`.
+`NODE_ENV`, `PORT`, `LOG_LEVEL`, `MONGODB_URI`, `ALLOWED_ORIGINS`, `GOOGLE_SHEET_ID`, `GOOGLE_SHEET_TAB`, `GOOGLE_SERVICE_ACCOUNT_EMAIL`, `GOOGLE_PRIVATE_KEY`, `SENDER_API_KEY`, `MAIL_FROM`, and `MAIL_REPLY_TO`.
+
+## Logging
+The backend writes structured JSON logs to stdout for collection by the hosting provider. Set `LOG_LEVEL` to `fatal`, `error`, `warn`, `info` (default), `debug`, `trace`, or `silent`. Logs include a service/environment label, request ID, route, response status and duration, startup/shutdown events, and delivery/retry outcomes. Each HTTP response includes an `X-Request-Id` header for support correlation. Request bodies, contact details, authorization headers, and common credentials are not logged; do not add personal or secret values to log fields.
 
 ## MongoDB Atlas
 Create a cluster and database user, allow the hosting provider IP range (or temporary development access), and put the connection string in `MONGODB_URI`.
@@ -23,6 +26,7 @@ Create a Google Cloud project, enable Google Sheets API, create a service accoun
 
 ## Sender.net
 Enable transactional emails in Sender.net, create an API access token under **Account settings → API access tokens**, and verify the sending domain/address. Set `SENDER_API_KEY` to the token and `MAIL_FROM` to the verified sender, for example `One Stock Academy <enquiries@onestock.com>`. The backend sends transactional messages through Sender.net's REST API.
+Confirmation emails use the current app's `/logo-brand.png` from the first HTTPS origin in `ALLOWED_ORIGINS`; keep that asset publicly accessible.
 
 ## Tests and curl
 ```powershell

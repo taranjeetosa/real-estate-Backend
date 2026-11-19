@@ -3,10 +3,12 @@ import helmet from "helmet";
 import cors from "cors";
 import { router } from "./routes/enquiry.routes.js";
 import { errorHandler } from "./middleware/errorHandler.js";
+import { requestLogger } from "./middleware/requestLogger.js";
 export function createApp(env) {
   const app = express();
   app.disable("x-powered-by");
   app.set("trust proxy", 1);
+  app.use(requestLogger);
   app.use(helmet());
   app.use(
     cors({

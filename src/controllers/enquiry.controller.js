@@ -15,7 +15,16 @@ export async function createEnquiry(req, res, next) {
       },
     });
     await processEnquiry(e);
-    logger.info({ enquiryId: e.id, source: e.source }, "Enquiry stored");
+    logger.info(
+      {
+        requestId: req.requestId,
+        enquiryId: e.id,
+        source: e.source,
+        sheetState: e.delivery.sheet.state,
+        confirmationEmailState: e.delivery.confirmationEmail.state,
+      },
+      "Enquiry processed",
+    );
     return res.status(201).json({ ok: true, message: "Your enquiry was received." });
   } catch (error) {
     next(error);
