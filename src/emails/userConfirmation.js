@@ -16,6 +16,8 @@ const C = {
 };
 const FONT = "'DM Sans','Segoe UI',Helvetica,Arial,sans-serif";
 const HEADING_FONT = "'Manrope','DM Sans','Segoe UI',Helvetica,Arial,sans-serif";
+const DISCLAIMER =
+  "Programme information is provided for general guidance. Course content, schedules, and delivery may change; please confirm current information with One Stock Academy before enrolling. One Stock Academy is an associated partner of OneX Properties and provides real-world assistance and support exploring internship opportunities after course completion. Internship opportunities are subject to availability and are not guaranteed. Completing a programme does not guarantee employment, investment returns, or a specific business outcome.";
 
 function getProjectOrigin() {
   return String(process.env.ALLOWED_ORIGINS || "")
@@ -58,6 +60,9 @@ export function buildUserConfirmation(e) {
     "Address: Floor-01, H Block, H-189, Sector 63, Noida, Uttar Pradesh 201309",
     "",
     "You are receiving this email because you submitted an enquiry on the One Stock Academy website.",
+    "",
+    "Disclaimer",
+    DISCLAIMER,
   ].join("\n");
 
   const row = (label, value, last) =>
@@ -127,7 +132,7 @@ export function buildUserConfirmation(e) {
     </table>
   </td></tr>
 </table>
-<table role="presentation" width="600" cellspacing="0" cellpadding="0" style="max-width:600px;width:100%;"><tr><td style="padding:16px 8px;font-size:12px;line-height:1.5;color:#8a8f9b;text-align:center;">You are receiving this email because you submitted an enquiry on the One Stock Academy website.</td></tr></table>
+<table role="presentation" width="600" cellspacing="0" cellpadding="0" style="max-width:600px;width:100%;"><tr><td style="padding:16px 8px;font-size:12px;line-height:1.5;color:#8a8f9b;text-align:center;">You are receiving this email because you submitted an enquiry on the One Stock Academy website.<div style="padding-top:12px;border-top:1px solid ${C.line};margin-top:12px;text-align:left;"><strong style="color:${C.muted};">Disclaimer:</strong> ${escapeHtml(DISCLAIMER)}</div></td></tr></table>
 </td></tr></table>
 </body></html>`;
 

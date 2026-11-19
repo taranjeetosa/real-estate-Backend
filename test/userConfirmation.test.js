@@ -6,6 +6,19 @@ afterEach(() => {
 });
 
 describe("user confirmation email", () => {
+  it("includes the programme disclaimer in HTML and plain text", () => {
+    const { html, text } = buildUserConfirmation({
+      name: "Alex Morgan",
+      pathway: "AI for Real Estate Professional",
+      phone: "9876543210",
+    });
+
+    expect(html).toContain("Disclaimer:");
+    expect(html).toContain("Internship opportunities are subject to availability and are not guaranteed.");
+    expect(text).toContain("Disclaimer\nProgramme information is provided for general guidance.");
+    expect(text).toContain("Completing a programme does not guarantee employment");
+  });
+
   it("uses the current app origin for the project logo", () => {
     vi.stubEnv(
       "ALLOWED_ORIGINS",
