@@ -56,7 +56,7 @@ export function buildUserConfirmation(e) {
     "",
     "Phone: +91 95990 37181",
     "WhatsApp: https://wa.me/919599037181",
-    "Email: support@onestock.com",
+    "Email: marketing@onestockacademy.com",
     "Address: Floor-01, H Block, H-189, Sector 63, Noida, Uttar Pradesh 201309",
     "",
     "You are receiving this email because you submitted an enquiry on the One Stock Academy website.",
@@ -127,7 +127,7 @@ export function buildUserConfirmation(e) {
     <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
       ${contact("Phone", link("tel:+919599037181", "+91 95990 37181"))}
       ${contact("WhatsApp", link("https://wa.me/919599037181", "Chat on WhatsApp"))}
-      ${contact("Email", link("mailto:support@onestock.com", "support@onestock.com"))}
+      ${contact("Email", link("mailto:marketing@onestockacademy.com", "marketing@onestockacademy.com"))}
       ${contact("Address", "Floor-01, H Block, H-189, Sector 63, Noida, Uttar Pradesh 201309")}
     </table>
   </td></tr>
